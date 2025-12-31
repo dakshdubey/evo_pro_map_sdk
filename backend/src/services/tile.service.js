@@ -1,4 +1,4 @@
-const geojsonvt = require('geojson-vt');
+const geojsonvt = require('geojson-vt').default || require('geojson-vt');
 const vtpbf = require('vt-pbf');
 const pool = require('../config/database');
 const { tileToBBox } = require('../utils/geo');
@@ -38,8 +38,8 @@ exports.generateTile = async (z, x, y) => {
             .filter(n => n.geojson) // Filter out null geometries
             .map(n => ({
                 type: 'Feature',
-                geometry: JSON.parse(n.geojson),
-                properties: { ...n.properties, id: n.node_id, type: n.type }
+                geometry: (typeof n.geojson === 'string' ? JSON.parse(n.geojson) : n.geojson),
+                properties: { ...(typeof n.properties === 'string' ? JSON.parse(n.properties) : n.properties), id: n.node_id, type: n.type }
             }));
 
         if (nodeFeatures.length > 0) layers.nodes = { type: 'FeatureCollection', features: nodeFeatures };
@@ -55,8 +55,8 @@ exports.generateTile = async (z, x, y) => {
             .filter(w => w.geojson)
             .map(w => ({
                 type: 'Feature',
-                geometry: JSON.parse(w.geojson),
-                properties: { ...w.properties, id: w.way_id, type: w.type }
+                geometry: (typeof w.geojson === 'string' ? JSON.parse(w.geojson) : w.geojson),
+                properties: { ...(typeof w.properties === 'string' ? JSON.parse(w.properties) : w.properties), id: w.way_id, type: w.type }
             }));
 
         if (wayFeatures.length > 0) layers.ways = { type: 'FeatureCollection', features: wayFeatures };
@@ -72,8 +72,8 @@ exports.generateTile = async (z, x, y) => {
             .filter(a => a.geojson)
             .map(a => ({
                 type: 'Feature',
-                geometry: JSON.parse(a.geojson),
-                properties: { ...a.properties, id: a.area_id, type: a.type }
+                geometry: (typeof a.geojson === 'string' ? JSON.parse(a.geojson) : a.geojson),
+                properties: { ...(typeof a.properties === 'string' ? JSON.parse(a.properties) : a.properties), id: a.area_id, type: a.type }
             }));
 
         if (areaFeatures.length > 0) layers.areas = { type: 'FeatureCollection', features: areaFeatures };

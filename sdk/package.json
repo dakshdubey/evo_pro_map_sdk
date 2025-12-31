@@ -1,0 +1,35 @@
+{
+  "name": "evo-map-sdk",
+  "version": "1.0.0",
+  "description": "Evo Map SDK - Easy-to-use map integration for JavaScript projects",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "types": "src/index.d.ts",
+  "scripts": {
+    "build": "echo 'Build script placeholder'",
+    "test": "echo 'Test script placeholder'"
+  },
+  "keywords": [
+    "map",
+    "maps",
+    "evo",
+    "maplibre",
+    "vector-tiles",
+    "geospatial",
+    "sdk"
+  ],
+  "author": "Evo Map Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "maplibre-gl": "^3.0.0 || ^4.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dakshdubey/evo_pro_map_sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/dakshdubey/evo_pro_map_sdk/issues"
+  },
+  "homepage": "https://github.com/dakshdubey/evo_pro_map_sdk#readme"
+}
