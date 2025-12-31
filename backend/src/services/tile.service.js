@@ -13,8 +13,9 @@ exports.generateTile = async (z, x, y) => {
     // Buffer for intersection (optional, but good for labels)
     const buffer = (maxX - minX) * 0.1;
 
+    let connection;
     try {
-        const connection = await pool.getConnection();
+        connection = await pool.getConnection();
 
         // Query Layers (simplify for now: nodes, ways, areas)
         // We fetch raw geometries. For "Production", we'd use map_tiles partition pruning.
@@ -33,11 +34,13 @@ exports.generateTile = async (z, x, y) => {
       WHERE ST_Intersects(geom_3857, ST_GeomFromText(?, 3857))
     `, [bboxWKT]);
 
-        const nodeFeatures = nodes.map(n => ({
-            type: 'Feature',
-            geometry: JSON.parse(n.geojson),
-            properties: { ...n.properties, id: n.node_id, type: n.type }
-        }));
+        const nodeFeatures = nodes
+            .filter(n => n.geojson) // Filter out null geometries
+            .map(n => ({
+                type: 'Feature',
+                geometry: JSON.parse(n.geojson),
+                properties: { ...n.properties, id: n.node_id, type: n.type }
+            }));
 
         if (nodeFeatures.length > 0) layers.nodes = { type: 'FeatureCollection', features: nodeFeatures };
 
@@ -48,11 +51,13 @@ exports.generateTile = async (z, x, y) => {
       WHERE ST_Intersects(geom_3857, ST_GeomFromText(?, 3857))
     `, [bboxWKT]);
 
-        const wayFeatures = ways.map(w => ({
-            type: 'Feature',
-            geometry: JSON.parse(w.geojson),
-            properties: { ...w.properties, id: w.way_id, type: w.type }
-        }));
+        const wayFeatures = ways
+            .filter(w => w.geojson)
+            .map(w => ({
+                type: 'Feature',
+                geometry: JSON.parse(w.geojson),
+                properties: { ...w.properties, id: w.way_id, type: w.type }
+            }));
 
         if (wayFeatures.length > 0) layers.ways = { type: 'FeatureCollection', features: wayFeatures };
 
@@ -63,15 +68,17 @@ exports.generateTile = async (z, x, y) => {
       WHERE ST_Intersects(geom_3857, ST_GeomFromText(?, 3857))
     `, [bboxWKT]);
 
-        const areaFeatures = areas.map(a => ({
-            type: 'Feature',
-            geometry: JSON.parse(a.geojson),
-            properties: { ...a.properties, id: a.area_id, type: a.type }
-        }));
+        const areaFeatures = areas
+            .filter(a => a.geojson)
+            .map(a => ({
+                type: 'Feature',
+                geometry: JSON.parse(a.geojson),
+                properties: { ...a.properties, id: a.area_id, type: a.type }
+            }));
 
         if (areaFeatures.length > 0) layers.areas = { type: 'FeatureCollection', features: areaFeatures };
 
-        connection.release();
+        // Connection release moved to finally block
 
         // Create a composite GeoJSON for geojson-vt
         // Actually geojson-vt takes a single FeatureCollection or an array?
@@ -98,5 +105,7 @@ exports.generateTile = async (z, x, y) => {
     } catch (error) {
         console.error('Tile generation error:', error);
         throw error;
+    } finally {
+        if (connection) connection.release();
     }
 };

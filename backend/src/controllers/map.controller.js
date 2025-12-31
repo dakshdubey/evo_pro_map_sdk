@@ -34,10 +34,6 @@ exports.getTile = async (req, res) => {
         const { z, x, y } = req.params;
         const pbf = await tileService.generateTile(z, x, y);
 
-        res.set('Content-Type', 'application/x-protobuf');
-        res.set('Content-Encoding', 'gzip'); // vt-pbf doesn't gzip by default? Check docs. Usually not gzipped unless we zip it. Browser expects gzip if header is set.
-        // vtpbf returns raw buffer. We should NOT set 'Content-Encoding: gzip' unless we zip it.
-        // But MVT usually served as 'application/vnd.mapbox-vector-tile'.
         res.set('Content-Type', 'application/vnd.mapbox-vector-tile');
         res.send(pbf);
     } catch (error) {
