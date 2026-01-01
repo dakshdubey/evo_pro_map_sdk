@@ -1,0 +1,22 @@
+{
+  "name": "evo-map-sdk",
+  "version": "1.0.0",
+  "description": "Open-access JavaScript Map SDK built on MapLibre GL",
+  "main": "sdk/src/index.js",
+  "type": "module",
+  "keywords": [
+    "map",
+    "sdk",
+    "maplibre",
+    "gis",
+    "evo-map"
+  ],
+  "author": "Daksha Dubey",
+  "license": "MIT",
+  "peerDependencies": {
+    "maplibre-gl": "^3.6.2"
+  },
+  "dependencies": {
+    "evo-map-sdk": "^1.0.0"
+  }
+}

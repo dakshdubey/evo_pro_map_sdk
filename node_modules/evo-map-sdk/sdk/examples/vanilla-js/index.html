@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evo Map SDK - Vanilla JS Example</title>
+  
+  <!-- MapLibre GL CSS -->
+  <link href="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.css" rel="stylesheet" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .controls h3 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .control-group {
+      margin-bottom: 10px;
+    }
+
+    .control-group label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .control-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 8px 16px;
+      margin-top: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .info {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      font-size: 12px;
+      color: #666;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="controls">
+    <h3>Layer Controls</h3>
+    <div class="control-group">
+      <label>
+        <input type="checkbox" id="toggle-nodes" checked>
+        Show Nodes (Points)
+      </label>
+    </div>
+    <div class="control-group">
+      <label>
+        <input type="checkbox" id="toggle-ways" checked>
+        Show Ways (Roads)
+      </label>
+    </div>
+    <div class="control-group">
+      <label>
+        <input type="checkbox" id="toggle-areas" checked>
+        Show Areas (Regions)
+      </label>
+    </div>
+    <button id="fly-to-india-gate">Fly to India Gate</button>
+    <button id="fly-to-cp">Fly to Connaught Place</button>
+  </div>
+
+  <div class="info">
+    <strong>Evo Map SDK - Vanilla JS Example</strong><br>
+    Click on the map to see coordinates in console.
+  </div>
+
+  <!-- MapLibre GL JS -->
+  <script src="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.js"></script>
+
+  <!-- Evo Map SDK (using local module) -->
+  <script type="module">
+    // Import SDK from local path (adjust path as needed)
+    import EvoMap from '../../src/index.js';
+
+    // Initialize map
+    const map = new EvoMap({
+      container: 'map',
+      apiUrl: 'http://localhost:3000/api/v1/map',
+      center: [77.2090, 28.6139], // New Delhi
+      zoom: 14,
+      style: {
+        nodeColor: '#ef4444',
+        nodeRadius: 8,
+        wayColor: '#f59e0b',
+        wayWidth: 3,
+        areaColor: 'rgba(34, 197, 94, 0.3)',
+        areaOutlineColor: '#22c55e'
+      }
+    });
+
+    // Event: Map loaded
+    map.on('load', () => {
+      console.log('✅ Map loaded successfully!');
+    });
+
+    // Event: Map click
+    map.on('click', (e) => {
+      console.log(`📍 Clicked at: ${e.lngLat.lng.toFixed(4)}, ${e.lngLat.lat.toFixed(4)}`);
+    });
+
+    // Layer toggle controls
+    document.getElementById('toggle-nodes').addEventListener('change', (e) => {
+      map.setLayerVisibility('nodes', e.target.checked);
+    });
+
+    document.getElementById('toggle-ways').addEventListener('change', (e) => {
+      map.setLayerVisibility('ways', e.target.checked);
+    });
+
+    document.getElementById('toggle-areas').addEventListener('change', (e) => {
+      map.setLayerVisibility('areas', e.target.checked);
+    });
+
+    // Fly to locations
+    document.getElementById('fly-to-india-gate').addEventListener('click', () => {
+      map.flyTo([77.2295, 28.6129], 16, { duration: 2000 });
+    });
+
+    document.getElementById('fly-to-cp').addEventListener('click', () => {
+      map.flyTo([77.2167, 28.6315], 16, { duration: 2000 });
+    });
+
+    // Make map available globally for debugging
+    window.evoMap = map;
+  </script>
+</body>
+</html>
